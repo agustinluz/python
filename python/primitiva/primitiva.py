@@ -77,7 +77,7 @@ def ordenarPorApellido():
     
     #reader.sort(key=lambda row: row[1]) Es otra manera de hacer que se ordende por uno de los datos del csv
 
-#Este es el método de la burbuja
+    #Este es el método de la burbuja
     n = len(reader)
     for i in range(n):
         for j in range(0, n - i - 1):
