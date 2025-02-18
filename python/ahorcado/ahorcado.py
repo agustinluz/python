@@ -1,8 +1,9 @@
 import random
 
 def mostrar_imagen(intentos):
+    """Muestra la imagen del ahorcado según los intentos restantes."""
     imagenes = [
-        '''
+        """
            ------
            |    |
                 |
@@ -10,26 +11,26 @@ def mostrar_imagen(intentos):
                 |
                 |
         ---------
-        ''',
-        '''
-           ------
-           |    |
-           O    |
-                |
-                |
-                |
-        ---------
-        ''',
-        '''
+        """,
+        """
            ------
            |    |
            O    |
+                |
+                |
+                |
+        ---------
+        """,
+        """
+           ------
+           |    |
+           O    |
            |    |
                 |
                 |
         ---------
-        ''',
-        '''
+        """,
+        """
            ------
            |    |
            O    |
@@ -37,8 +38,8 @@ def mostrar_imagen(intentos):
                 |
                 |
         ---------
-        ''',
-        '''
+        """,
+        """
            ------
            |    |
            O    |
@@ -46,8 +47,8 @@ def mostrar_imagen(intentos):
                 |
                 |
         ---------
-        ''',
-        '''
+        """,
+        """
            ------
            |    |
            O    |
@@ -55,8 +56,8 @@ def mostrar_imagen(intentos):
           /     |
                 |
         ---------
-        ''',
-        '''
+        """,
+        """
            ------
            |    |
            O    |
@@ -64,100 +65,101 @@ def mostrar_imagen(intentos):
           / \\  |
                 |
         ---------
-        '''
+        """
     ]
     print(imagenes[6 - intentos])
 
 def menu():
-    print("Menú")
-    print("1. Introducir palabras en el fichero")
-    print("2. Introducir nombre del jugador")
-    print("3. Jugar")
-    print("4. Salir")
-    return int(input("Elija una opción: "))
+    opciones = ["1", "2", "3", "4"]
+    while True:
+        print("\nMenú")
+        print("1. Introducir palabras en el fichero")
+        print("2. Introducir nombre del jugador")
+        print("3. Jugar")
+        print("4. Salir")
+        opcion = input("Elija una opción: ")
+        if opcion in opciones:
+            return opcion
+        print("Opción no válida. Inténtalo de nuevo.")
 
 def introducir_palabras():
-    with open("palabras.csv", encoding="utf-8", mode="a") as f:
-        palabra = input("Escribe una palabra a introducir en el fichero: ")
-        f.write(palabra + "\n")
+    palabra = input("Escribe una palabra a introducir en el fichero: ").strip().lower()
+    if palabra:
+        with open("palabras.csv", encoding="utf-8", mode="a") as f:
+            f.write(palabra + "\n")
         print("Palabra introducida correctamente.")
+    else:
+        print("No has introducido una palabra válida.")
 
 def introducir_nombre():
     global nombre
-    nombre = input("Escribe tu nombre: ")
-    print(f"Hola {nombre}, bienvenido al juego del ahorcado!")
+    while True:
+        nombre = input("Escribe tu nombre: ").strip()
+        if nombre:
+            print(f"Hola {nombre}, bienvenido al juego del ahorcado!")
+            return
+        print("Debes introducir un nombre válido.")
 
 def jugar():
-        with open("palabras.csv", encoding="utf-8", mode="r") as f:
-            palabras = f.readlines()
-            if len(palabras) == 0:
-                print("No hay palabras en el fichero. Añade algunas antes de jugar.")
 
-            palabra = random.choice(palabras).strip()
-            intentos = 6
-            palabra_oculta = ["_" for _ in range(len(palabra))]
-            letras_incorrectas = []
-            puntuacion = 0
+    with open("palabras.csv", encoding="utf-8", mode="r") as f:
+        palabras = [line.strip() for line in f]
 
-            print("Comienza el juego!")
+    palabra = random.choice(palabras)
+    intentos = 6
+    palabra_oculta = ["_" for _ in palabra]
+    letras_incorrectas = []
 
-            while intentos > 0:
-                print(" ".join(palabra_oculta))
-                print(f"Letras incorrectas: {', '.join(letras_incorrectas)}")
-                print(f"Intentos restantes: {intentos}")
-                mostrar_imagen(intentos)
+    print("\n¡Comienza el juego!")
+    while intentos > 0:
+        print("\n" + " ".join(palabra_oculta))
+        print(f"Letras incorrectas: {', '.join(letras_incorrectas) if letras_incorrectas else 'Ninguna'}")
+        print(f"Intentos restantes: {intentos}")
+        mostrar_imagen(intentos)
 
-                letra = input("Escribe una letra: ").lower()
+        letra = input("Escribe una letra: ").strip().lower()
+        
+        if not letra or len(letra) > 1:
+            print("Introduce una única letra válida.")
+            
 
-                if letra in letras_incorrectas or letra in palabra_oculta:
-                    print("Ya has intentado esa letra antes. Intenta con una diferente.")
+        if letra in letras_incorrectas or letra in palabra_oculta:
+            print("Ya has intentado esa letra antes. Intenta con una diferente.")
 
-                if letra not in palabra:
-                    letras_incorrectas.append(letra)
-                    intentos -= 1
-                else:
-                    for i in range(len(palabra)):
-                        if palabra[i] == letra:
-                            palabra_oculta[i] = letra
+        if letra in palabra:
+            for i, caracter in enumerate(palabra):
+                if caracter == letra:
+                    palabra_oculta[i] = letra
+        else:
+            if letra not in letras_incorrectas:                
+                letras_incorrectas.append(letra)
+                intentos -= 1
 
-                if "_" not in palabra_oculta:
-                    print("¡HAS GANADO!")
-                    if intentos == 6:
-                        puntuacion = 150
-                    elif intentos == 5:
-                        puntuacion = 100
-                    elif intentos == 4:
-                        puntuacion = 75
-                    elif intentos == 3:
-                        puntuacion = 50
-                    elif intentos == 2:
-                        puntuacion = 25
-                    else:
-                        puntuacion = 10
+        if "_" not in palabra_oculta:
+            puntuacion = [150, 100, 75, 50, 25, 10][6 - intentos]
+            print("\n¡HAS GANADO!")
+            print(f"{nombre}, tu puntuación es: {puntuacion} puntos.")
+            return
 
-                    print(f"{nombre} tu puntuación es: {puntuacion} puntos.")
-                    break
-
-            if "_" in palabra_oculta:
-                print(f"{nombre} has perdido. La palabra correcta era: {palabra}.")
+    print(f"\n{nombre}, has perdido. La palabra correcta era: {palabra}.")
 
 def juego():
     global nombre
     nombre = ""
     while True:
-        opc = menu()
-        if opc == 1:
+        opcion = menu()
+        if opcion == "1":
             introducir_palabras()
-        elif opc == 2:
+        elif opcion == "2":
             introducir_nombre()
-        elif opc == 3:
-            if nombre == "":
+        elif opcion == "3":
+            if not nombre:
                 print("Primero debes introducir tu nombre.")
             else:
                 jugar()
-        elif opc == 4:
+        elif opcion == "4":
             print("¡Hasta luego!")
             break
 
-
-juego()
+if __name__ == "__main__":
+    juego()
