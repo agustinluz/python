@@ -1,5 +1,4 @@
 import random
-import time
 
 # Función para mostrar la imagen del ahorcado
 def mostrar_imagen(intentos):
@@ -108,7 +107,6 @@ def jugar():
             puntuacion = 0
 
             print("Comienza el juego!")
-            start_time = time.time()
 
             while intentos > 0:
                 print(" ".join(palabra_oculta))
@@ -132,7 +130,6 @@ def jugar():
 
                 if "_" not in palabra_oculta:
                     print("¡HAS GANADO!")
-                    tiempo = int(time.time() - start_time)
                     if intentos == 6:
                         puntuacion = 150
                     elif intentos == 5:
